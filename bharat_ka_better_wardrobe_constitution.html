@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #1a1410;
+    --warm-white: #f5f0e8;
+    --sand: #e8dcc8;
+    --terracotta: #c4622d;
+    --gold: #b8960c;
+    --muted: #7a6f63;
+    --rule: #c8bba8;
+    --decision-bg: #fff8ee;
+    --decision-border: #e8a030;
+    --filled-bg: #f0f4ed;
+    --filled-border: #7a9e6a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--warm-white);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* COVER */
+  .cover {
+    background: var(--ink);
+    color: var(--warm-white);
+    padding: 80px 60px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: 'बेहतर';
+    position: absolute;
+    right: -20px;
+    top: 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 180px;
+    color: rgba(255,255,255,0.04);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .cover-eyebrow {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 32px;
+  }
+  .cover-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    font-weight: 400;
+  }
+  .cover-title span {
+    color: var(--terracotta);
+    font-style: italic;
+  }
+  .cover-subtitle {
+    font-size: 13px;
+    color: rgba(245,240,232,0.5);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+  .cover-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 32px;
+    font-size: 12px;
+    color: rgba(245,240,232,0.4);
+  }
+  .cover-meta strong { display: block; color: rgba(245,240,232,0.8); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; font-weight: 500; }
+
+  /* NAV */
+  .toc {
+    background: var(--sand);
+    padding: 40px 60px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .toc-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px 32px;
+  }
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--ink);
+    padding: 4px 0;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .toc-item:hover { border-color: var(--terracotta); }
+  .toc-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 11px;
+    color: var(--terracotta);
+    min-width: 20px;
+  }
+
+  /* MAIN */
+  .main { max-width: 860px; margin: 0 auto; padding: 0 60px 80px; }
+
+  /* SECTION */
+  .section {
+    padding: 56px 0 40px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .section:last-child { border-bottom: none; }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  .section-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--rule);
+    flex-shrink: 0;
+    margin-top: -8px;
+  }
+  .section-title-block {}
+  .section-eyebrow {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 4px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  /* BLOCKS */
+  .prose { font-size: 15px; line-height: 1.8; color: #2a2420; margin-bottom: 20px; }
+  .prose strong { font-weight: 500; }
+
+  /* FILLED BLOCK */
+  .filled {
+    background: var(--filled-bg);
+    border-left: 3px solid var(--filled-border);
+    padding: 20px 24px;
+    margin: 20px 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .filled-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--filled-border);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .filled p { font-size: 15px; line-height: 1.75; color: var(--ink); }
+
+  /* DECISION BLOCK */
+  .decision {
+    background: var(--decision-bg);
+    border-left: 3px solid var(--decision-border);
+    padding: 20px 24px;
+    margin: 20px 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .decision-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--decision-border);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .decision p { font-size: 14px; line-height: 1.7; color: #5a4a2a; font-style: italic; }
+  .decision ul { padding-left: 18px; }
+  .decision ul li { font-size: 14px; line-height: 1.7; color: #5a4a2a; font-style: italic; margin-bottom: 4px; }
+
+  /* RULE GRID */
+  .rule-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .rule-card {
+    border: 1px solid var(--rule);
+    padding: 16px 20px;
+    border-radius: 4px;
+    background: white;
+  }
+  .rule-card.yes { border-top: 3px solid var(--filled-border); }
+  .rule-card.no { border-top: 3px solid #c04040; }
+  .rule-card-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .rule-card.yes .rule-card-label { color: var(--filled-border); }
+  .rule-card.no .rule-card-label { color: #c04040; }
+  .rule-card ul { list-style: none; padding: 0; }
+  .rule-card ul li {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink);
+    padding: 5px 0;
+    border-bottom: 1px solid var(--sand);
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .rule-card ul li:last-child { border-bottom: none; }
+  .rule-card ul li::before { flex-shrink: 0; margin-top: 2px; font-size: 10px; }
+  .rule-card.yes ul li::before { content: '✓'; color: var(--filled-border); }
+  .rule-card.no ul li::before { content: '✕'; color: #c04040; }
+
+  /* PERSONA CARDS */
+  .persona-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .persona-card {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+    background: white;
+  }
+  .persona-header {
+    background: var(--ink);
+    color: var(--warm-white);
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .persona-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 400; }
+  .persona-tag { font-size: 10px; letter-spacing: 1px; color: var(--terracotta); text-transform: uppercase; margin-top: 3px; }
+  .persona-body { padding: 16px 18px; }
+  .persona-body p { font-size: 13px; line-height: 1.65; color: #3a3028; margin-bottom: 10px; }
+  .persona-truth {
+    background: var(--decision-bg);
+    border-left: 2px solid var(--decision-border);
+    padding: 10px 14px;
+    margin-top: 10px;
+  }
+  .persona-truth-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--decision-border); margin-bottom: 5px; font-weight: 500; }
+  .persona-truth p { font-size: 13px; color: #5a4a2a; font-style: italic; margin: 0; }
+
+  /* CONTENT FORMAT TABLE */
+  .format-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 13px; }
+  .format-table th {
+    text-align: left;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 12px;
+    border-bottom: 2px solid var(--rule);
+    font-weight: 500;
+  }
+  .format-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--sand);
+    vertical-align: top;
+    line-height: 1.55;
+    color: #2a2420;
+  }
+  .format-table tr:last-child td { border-bottom: none; }
+  .format-table tr:hover td { background: rgba(245,240,232,0.6); }
+  .phase-label {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+  .phase-prebuzz { background: #e8f0ff; color: #3060a0; }
+  .phase-prelaunch { background: #fff0e8; color: #a04020; }
+  .phase-launch { background: #f0f4ed; color: #507040; }
+
+  /* VISUAL STANDARDS */
+  .visual-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 24px 0;
+  }
+  .visual-card {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 16px;
+    background: white;
+  }
+  .visual-card-icon { font-size: 22px; margin-bottom: 10px; }
+  .visual-card-title { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+  .visual-card-value { font-size: 13px; color: var(--ink); line-height: 1.5; }
+  .visual-card-value strong { display: block; font-weight: 500; margin-bottom: 2px; }
+
+  /* SIGNATURE STRIP */
+  .signature-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    margin: 24px 0;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .sig-item {
+    padding: 16px 14px;
+    border-right: 1px solid var(--rule);
+    background: white;
+    text-align: center;
+  }
+  .sig-item:last-child { border-right: none; }
+  .sig-item-icon { font-size: 18px; margin-bottom: 8px; }
+  .sig-item-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  .sig-item-value { font-size: 12px; color: var(--ink); margin-top: 4px; line-height: 1.4; }
+
+  /* DIVIDER */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 28px 0;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--rule); }
+  .divider-text { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 24px;
+    padding: 16px 24px;
+    background: var(--sand);
+    border-radius: 4px;
+    margin-bottom: 32px;
+    font-size: 12px;
+    align-items: center;
+  }
+  .legend-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-right: 8px; font-weight: 500; }
+  .legend-item { display: flex; align-items: center; gap: 8px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 1px; flex-shrink: 0; }
+  .legend-dot.green { background: var(--filled-border); }
+  .legend-dot.amber { background: var(--decision-border); }
+
+  /* FOOTER */
+  .doc-footer {
+    background: var(--ink);
+    color: rgba(245,240,232,0.4);
+    padding: 24px 60px;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: 1px;
+  }
+  .doc-footer strong { color: rgba(245,240,232,0.7); }
+
+  /* PRINT hint */
+  @media (max-width: 700px) {
+    .cover { padding: 48px 28px 40px; }
+    .toc { padding: 32px 28px; }
+    .toc-grid { grid-template-columns: 1fr 1fr; }
+    .main { padding: 0 28px 60px; }
+    .rule-grid, .persona-grid, .visual-grid { grid-template-columns: 1fr; }
+    .signature-strip { grid-template-columns: 1fr 1fr; }
+    .cover-meta { grid-template-columns: 1fr; }
+    .doc-footer { padding: 20px 28px; flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-eyebrow">Campaign IP · Brand Constitution · V1.0</div>
+  <div class="cover-title">Bharat Ka <span>BETTER</span><br>बेहतर Wardrobe</div>
+  <div class="cover-subtitle">The permanent brief · सादा / SAADAA</div>
+  <div class="cover-meta">
+    <div><strong>Document Type</strong>IP Constitution — read before any launch</div>
+    <div><strong>Applies To</strong>All product launches under this IP</div>
+    <div><strong>Version</strong>V1.0 · April 2026 · To be reviewed annually</div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-label">Contents</div>
+  <div class="toc-grid">
+    <div class="toc-item"><span class="toc-num">01</span> The Idea</div>
+    <div class="toc-item"><span class="toc-num">02</span> The Conviction (Why)</div>
+    <div class="toc-item"><span class="toc-num">03</span> The Voice</div>
+    <div class="toc-item"><span class="toc-num">04</span> The Signature Elements</div>
+    <div class="toc-item"><span class="toc-num">05</span> What This Is Not</div>
+    <div class="toc-item"><span class="toc-num">06</span> The Persona Bank</div>
+    <div class="toc-item"><span class="toc-num">07</span> Content Format Library</div>
+    <div class="toc-item"><span class="toc-num">08</span> Influencer Philosophy</div>
+    <div class="toc-item"><span class="toc-num">09</span> How to Use This Document</div>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="main">
+<div style="padding-top: 36px;">
+  <div class="legend">
+    <span class="legend-label">Key</span>
+    <span class="legend-item"><span class="legend-dot green"></span> Pre-filled — use as written</span>
+    <span class="legend-item"><span class="legend-dot amber"></span> Decision needed — team to align in session</span>
+  </div>
+</div>
+
+<!-- SECTION 1 -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">01</div>
+    <div class="section-title-block">
+      <div class="section-eyebrow">Foundation</div>
+      <div class="section-title">The Idea</div>
+    </div>
+  </div>
+
+  <p class="prose">One paragraph. This is what every writer, director, creator, and new joiner reads first. It is the answer to "what is this campaign?"</p>
+
+  <div class="filled">
+    <div class="filled-label">Pre-filled draft — refine in session</div>
+    <p>Most Indians have spent their lives buying clothes designed for someone else — a different body, a different climate, a different life. सादा / SAADAA is building the wardrobe that should have always existed: a permanent, considered collection of basics made specifically for how India actually lives. <em>Bharat Ka BETTER | बेहतर Wardrobe</em> is the umbrella under which every product we launch lives. It is not a season. It is not a trend. It is a long-running declaration that Indians deserve better basics — and that we are here to build them, one fabric at a time.</p>
+  </div>
+
+  <div class="decision">
+    <div class="decision-label">Decision needed</div>
+    <p>Is the emotional register of this IP primarily warm and reassuring, or quietly confident and assertive? The draft above leans assertive. Align the team on the feeling before approving this paragraph — it will govern every creative instinct downstream.</p>
+  </div>
+
+  <div class="divider"><div class="divider-line"></div><div class="divider-text">Core Message</div><div class="divider-line"></div></div>
+
+  <div class="filled">
+    <div class="filled-label">Pre-filled — locked</div>
+    <p><strong>We all don't need more. Just better.</strong></p>
+  </div>
+</div>
+
+<!-- SECTION 2 -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">02</div>
+    <div class="section-title-block">
+      <div class="section-eyebrow">The Why</div>
+      <div class="section-title">The Conviction</div>
+    </div>
+  </div>
+
+  <p class="prose">This section answers: why does this IP exist? It is the reasoning a founder would give on stage, a writer would reach for when they feel lost, and a creator would paraphrase naturally. It is not a tagline. It is a belief.</p>
+
+  <div class="filled">
+    <div class="filled-label">Pre-filled — three pillars of conviction</div>
+    <p><strong>Designed for India, not borrowed from elsewhere.</strong> Every garment we make starts with the Indian body, the Indian summer, the Indian commute. Not as a positioning statement — as an actual design constraint. This is why we are transparent about the why behind every product we launch.</p>
+  </div>
+
+  <div class="filled">
+    <div class="filled-label">&nbsp;</div>
+    <p><strong>Permanence over newness.</strong> We are not building a collection for this season. We are building a wardrobe for the next decade. When something earns its place in the Behtar Wardrobe, it stays. We are not chasing fast fashion — we are building against it.</p>
+  </div>
+
+  <div class="filled">
+    <div class="filled-label">&nbsp;</div>
+    <p><strong>Democratising the decision to buy well.</strong> Knowing what is worth buying, what will last, what actually fits — this should not be a privilege. The Behtar Wardrobe thesis is that every Indian, regardless of city or income tier, deserves access to basics that are genuinely better.</p>
+  </div>
+
+  <div class="decision">
+    <div class="decision-label">Decision needed</div>
+    <p>The third pillar (democratisation) has pricing implications. Do you want to make a democratisation claim publicly in campaign materials, or keep it as internal conviction? If stated publicly, it will invite scrutiny of your price points. Decide the level of directness before this goes to creators.</p>
+  </div>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">03</div>
+    <div class="section-title-block">
+      <div class="section-eyebrow">Communication</div>
+      <div class="section-title">The Voice</div>
+    </div>
+  </div>
+
+  <p class="prose">The voice of this IP is not a mood board. It is a set of specific, testable choices. When in doubt, run your copy through this section.</p>
+
+  <div class="rule-grid">
+    <div class="rule-card yes">
+      <div class="rule-card-label">We say this</div>
+      <ul>
+        <li>Breathes with you in July</li>
+        <li>Made for Indian skin tones</li>
+        <li>The fabric you'll reach for every day</li>
+        <li>Fits the way India actually moves</li>
+        <li>Soft enough to forget you're wearing it</li>
+        <li>Built to last five summers, not one</li>
+        <li>Behtar — not more</li>
+      </ul>
+    </div>
+    <div class="rule-card no">
+      <div class="rule-card-label">We never say this</div>
+      <ul>
+        <li>Luxury, elevate, curate, premium</li>
+        <li>Moisture-wicking technology</li>
+        <li>Effortlessly chic</li>
+        <li>Less is more (too generic)</li>
+        <li>Wardrobe staple (overused)</li>
+        <li>Sustainable (unless we can prove it)</li>
+        <li>Fashion-forward or trend-led anything</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="divider"><div class="divider-line"></div><div class="divider-text">Language Protocol</div><div class="divider-line"></div></div>
+
+  <div class="filled">
+    <div class="filled-label">Pre-filled — locked</div>
+    <p><strong>Verbal communication:</strong> Say <em>Behtar</em> — warm, conversational, Hindi-first.<br>
+    <strong>Written / visual communication:</strong> Use <em>BETTER | बेहतर</em> — the bilingual mark, always together, always in this order.<br>
+    <strong>Subtitles and text overlays:</strong> Minimal. When used, Helvetica only. Color: yellow on dark backgrounds, black or white on light.</p>
+  </div>
+
+  <div class="decision">
+    <div class="decision-label">Decision needed</div>
+    <p>Does the language switch by platform or stay consistent? For example: does a reel targeting a Tier 2 audience lead more heavily in Hindi, while a metro-targeted paid ad leads in English? Decide whether there is a platform-level language rule, or whether it is always creator/director discretion.</p>
+  </div>
+
+  <div class="decision">
+    <div class="decision-label">Decision needed</div>
+    <p>Can the campaign use humour? The current tone pillars (simple, honest, minimal, functional) don't say yes or no. Humour, used right, could be a strong tool — especially in prebuzz. Align the team: is there room for wit inside this IP, or does the IP always stay earnest?</p>
+  </div>
+</div>
+
+<!-- SECTION 4 -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">04</div>
+    <div class="section-title-block">
+      <div class="section-eyebrow">Visual Identity</div>
+      <div class="section-title">The Signature Elements</div>
+    </div>
+  </div>
+
+  <p class="prose">These are mandatory in every piece of content produced under this IP — regardless of launch, format, or creator. They are the visual stitches that make 15 different launches feel like one campaign. If any element is absent, the content is not part of the Behtar Wardrobe IP.</p>
+
+  <div class="signature-strip">
+    <div class="sig-item">
+      <div class="sig-item-icon">🚪</div>
+      <div class="sig-item-label">Opening Shot</div>
+      <div class="sig-item-value">Indian wardrobe — lived in, real</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-item-icon">🔆</div>
+      <div class="sig-item-label">Lighting</div>
+      <div class="sig-item-value">Warm always. No cool/blue-toned shoots.</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-item-icon">🔤</div>
+      <div class="sig-item-label">Font</div>
+      <div class="sig-item-value">Helvetica only. No exceptions.</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-item-icon">🎨</div>
+      <div class="sig-item-label">Colour</div>
+      <div class="sig-item-value">Warm neutrals. Subtitle: yellow / black / white only.</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-item-icon">▶</div>
+      <div class="sig-item-label">Endscreen</div>
+      <div class="sig-item-value">Standard BETTER | बेहतर graphic. Always.</div>
+    </div>
+  </div>
+
+  <div class="decision">
+    <div class="decision-label">Decision needed — critical</div>
+    <p>The "opening Indian wardrobe" shot: what does it actually look like? A humble steel almirah in a Tier 3 home reads very differently from a wooden wardrobe in a Jaipur apartment. This is a brand meaning decision, not just a prop decision. Decide and photograph a reference shot before the first shoot. All future directors pull from this reference.</p>
+  </div>
+
+  <div class="decision">
+    <div class="decision-label">Decision needed</div>
+    <p>The concept note lists the "BETTER | बेहतर Wardrobe" sub-logo as a visual distinction — but no graphic exists yet. Before the IP launches, lock the actual graphic asset (sub-logo, watermark, endscreen). Without the locked asset, teams will improvise and the visual identity will fragment.</p>
+  </div>
+</div>
+
+<!-- SECTION 5 -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">05</div>
+    <div class="section-title-block">
+      <div class="section-eyebrow">Boundaries</div>
+      <div class="section-title">What This Is Not</div>
+    </div>
+  </div>
+
+  <p class="prose">The most underrated section of any creative IP. Being explicit about what breaks the campaign is what keeps it coherent across 15 launches and multiple creators. If a piece of content matches any description below, it does not belong under this IP.</p>
+
+  <div class="filled">
+    <div class="filled-label">Pre-filled — do not cross</div>
+    <p><strong>Not a fashion campaign.</strong> No editorial poses, no runway lighting, no clothes that look unwearable in real life. The moment a shot feels like a fashion magazine, it has broken the IP.</p>
+  </div>
+  <div class="filled">
+    <div class="filled-label">&nbsp;</div>
+    <p><strong>Not aspirational in the traditional sense.</strong> We are not showing the life people wish they had. We are showing the life people actually live, with better clothes in it. Aspirational settings (rooftops, cafes, airports) are fine only when they are real and unglamourised.</p>
+  </div>
+  <div class="filled">
+    <div class="filled-label">&nbsp;</div>
+    <p><strong>Not a "sustainability brand" campaign.</strong> We do not lead with sustainability as a message. If a creator or writer frames the campaign around eco-consciousness, it misrepresents the brand's actual positioning.</p>
+  </div>
+  <div class="filled">
+    <div class="filled-label">&nbsp;</div>
+    <p><strong>Not metro-only.</strong> If all the faces, all the settings, and all the references are from Mumbai and Bengaluru, the campaign has failed. Tier 2 and Tier 3 India must be visibly, genuinely present — not as a token shot at the end.</p>
+  </div>
+  <div class="filled">
+    <div class="filled-label">&nbsp;</div>
+    <p><strong>Not loud.</strong> No high-energy music drops, no fast cuts, no hype language. The IP's natural pace is calm and considered. Urgency is fine in prebuzz; it should never bleed into storytelling content.</p>
+  </div>
+
+  <div class="decision">
+    <div class="decision-label">Decision needed</div>
+    <p>Add 2–3 more "not" statements specific to what you've seen go wrong in past SAADAA content. The team will have examples. Surface them here so they are documented and not repeated.</p>
+  </div>
+</div>
+
+<!-- SECTION 6 -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">06</div>
+    <div class="section-title-block">
+      <div class="section-eyebrow">Audience</div>
+      <div class="section-title">The Persona Bank</div>
+    </div>
+  </div>
+
+  <p class="prose">These are the people this campaign speaks to. Each launch will draw on one or two personas as primary — never all four at once. For each persona, the most important line is the <strong>Wardrobe Truth</strong> — the one problem सादा / SAADAA solves for them. This is what writers and directors reach for when they need to make something feel real.</p>
+
+  <div class="decision">
+    <div class="decision-label">Decision needed — resolve before launch</div>
+    <p>The target audience header states 18–40 years. Two of the four personas below are 58 and 65. Either update the stated age range to reflect the actual audience, or clarify that these older personas represent aspirational future customers. This discrepancy will confuse media buyers and creators if left unresolved.</p>
+  </div>
+
+  <div class="persona-grid">
+    <div class="persona-card">
+      <div class="persona-header">
+        <div>
+          <div class="persona-name">The School Teacher</div>
+          <div class="persona-tag">42 · Tier 2 City · ₹15L income</div>
+        </div>
+      </div>
+      <div class="persona-body">
+        <p>Balances work and motherhood. Values comfort above all — approaching menopause, so breathability and soft fabrics matter more than they used to. Cooks, reads, socialises. Buys once and wears often.</p>
+        <div class="persona-truth">
+          <div class="persona-truth-label">Her Wardrobe Truth</div>
+          <p>She's tired of clothes that look good on the hanger but fail her by afternoon. She needs fabric that works as hard as she does.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="persona-card">
+      <div class="persona-header">
+        <div>
+          <div class="persona-name">The Software Engineer</div>
+          <div class="persona-tag">58 · Tier 3 City · ₹60L income · Plus-size</div>
+        </div>
+      </div>
+      <div class="persona-body">
+        <p>Spends most of his time at work and with family. Manages diabetes — breathable fabrics are a health need, not a preference. Sticks to shirt-and-trouser silhouettes he knows. Comfort over trends, always.</p>
+        <div class="persona-truth">
+          <div class="persona-truth-label">His Wardrobe Truth</div>
+          <p>Most clothes aren't designed for his body or his life. When something actually fits and breathes, he buys three of it.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="persona-card">
+      <div class="persona-header">
+        <div>
+          <div class="persona-name">The Retired One</div>
+          <div class="persona-tag">65 · Tier 2/3 City · Fixed routine</div>
+        </div>
+      </div>
+      <div class="persona-body">
+        <p>Simple, routine-driven life. A small, dependable wardrobe — not many pieces, but ones that can be trusted. Soft fabrics, loose fits, no fuss. Has long since stopped caring about trends.</p>
+        <div class="persona-truth">
+          <div class="persona-truth-label">Their Wardrobe Truth</div>
+          <p>They want clothes that disappear — that require no thought, no adjusting, no discomfort. Just reliable softness, every day.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="persona-card">
+      <div class="persona-header">
+        <div>
+          <div class="persona-name">The Marketing Executive</div>
+          <div class="persona-tag">26 · Metro · ₹8–10L · Independent</div>
+        </div>
+      </div>
+      <div class="persona-body">
+        <p>Fast-paced, lives alone, values versatility. Needs outfits that go from desk to dinner without a change. Fuss-free and repeat-wear conscious. Aware of quality — will pay more for less, if it earns the repeat.</p>
+        <div class="persona-truth">
+          <div class="persona-truth-label">Her Wardrobe Truth</div>
+          <p>She's done buying things that look good once. She wants a uniform she's actually proud to repeat.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="decision">
+    <div class="decision-label">Decision needed</div>
+    <p>Do the Wardrobe Truths above match what your actual customer data says? You have 8 lakh+ customers and BigQuery. Before this goes to creators, validate at least 2 of these truths against return reason data, helpdesk themes, or review language. A truth grounded in real data will write better copy than one invented in a room.</p>
+  </div>
+</div>
+
+<!-- SECTION 7 -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">07</div>
+    <div class="section-title-block">
+      <div class="section-eyebrow">Execution</div>
+      <div class="section-title">Content Format Library</div>
+    </div>
+  </div>
+
+  <p class="prose">This is the menu of available formats. Every launch picks from this list — it does not use all of them. The per-launch playbook specifies which formats are active for that launch and which persona each is targeting.</p>
+
+  <table class="format-table">
+    <thead>
+      <tr>
+        <th>Phase</th>
+        <th>Format Name</th>
+        <th>Job to be done</th>
+        <th>Mandatory?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="phase-label phase-prebuzz">Prebuzz</span></td>
+        <td>Problem-Focused Social Experiment</td>
+        <td>Create hype and need. Signature hook (e.g. knock on door) — varies post-hook by launch.</td>
+        <td>Yes — every launch</td>
+      </tr>
+      <tr>
+        <td><span class="phase-label phase-prebuzz">Prebuzz</span></td>
+        <td>BTS Trials & Making</td>
+        <td>Build trust by showing real process — sampling, trials, multiple bodies, multiple POVs.</td>
+        <td>Yes — every launch</td>
+      </tr>
+      <tr>
+        <td><span class="phase-label phase-prebuzz">Prebuzz</span></td>
+        <td>Hype / Cliffhanger</td>
+        <td>Leave audience on a cliffhanger. Countdown, tease, curiosity-build.</td>
+        <td>Yes — every launch</td>
+      </tr>
+      <tr>
+        <td><span class="phase-label phase-prelaunch">Prelaunch</span></td>
+        <td>Founder's Announcement</td>
+        <td>Product intro, USP, micro-details. Split-screen: founder + b-roll of garments.</td>
+        <td>Yes — every launch</td>
+      </tr>
+      <tr>
+        <td><span class="phase-label phase-prelaunch">Prelaunch</span></td>
+        <td>Indian Context Storytelling</td>
+        <td>Day-in-the-life of a specific persona wearing the product. Horizontal format. Highly relatable.</td>
+        <td>Select by persona relevance</td>
+      </tr>
+      <tr>
+        <td><span class="phase-label phase-prelaunch">Prelaunch</span></td>
+        <td>Product USP Moodshot</td>
+        <td>Diverse bodies, sizes, skin tones. Mood-led shots. Makes audience see themselves in the product.</td>
+        <td>Yes — every launch</td>
+      </tr>
+      <tr>
+        <td><span class="phase-label phase-prelaunch">Prelaunch</span></td>
+        <td>VRP (Styling / GRWM)</td>
+        <td>Quick visual — how to style, transitions, GRWM. Shows versatility.</td>
+        <td>Select by product type</td>
+      </tr>
+      <tr>
+        <td><span class="phase-label phase-launch">Launch</span></td>
+        <td>Newspaper on Door</td>
+        <td>Repeatable signature format. Door opens → different persona → product in their real life.</td>
+        <td>Yes — every launch</td>
+      </tr>
+      <tr>
+        <td><span class="phase-label phase-launch">Launch</span></td>
+        <td>Founder's Fabric Education</td>
+        <td>Founders break down the fabric — feel, texture, flow, fall. Credibility and depth.</td>
+        <td>Yes — fabric launches</td>
+      </tr>
+      <tr>
+        <td><span class="phase-label phase-launch">Launch</span></td>
+        <td>Problem–Solution</td>
+        <td>One problem, one solution. Indian body-specific. Direct and relatable.</td>
+        <td>Select by launch angle</td>
+      </tr>
+      <tr>
+        <td><span class="phase-label phase-launch">Launch</span></td>
+        <td>Single USP Comparison</td>
+        <td>Split-screen: our product vs. typical alternative. One USP per video. Instantly clear value.</td>
+        <td>Select by launch angle</td>
+      </tr>
+      <tr>
+        <td><span class="phase-label phase-launch">Launch</span></td>
+        <td>UGC / Customer Feedback</td>
+        <td>Real customer voices. Authentic, natural. Trust and relatability above all.</td>
+        <td>Yes — post-launch always</td>
+      </tr>
+      <tr>
+        <td><span class="phase-label phase-launch">Launch</span></td>
+        <td>Headshot Format</td>
+        <td>Speaker direct to camera + b-roll. Clear feature explanation. Good for detailed fabrics.</td>
+        <td>Select by launch complexity</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="decision">
+    <div class="decision-label">Decision needed — resolve the door conflict</div>
+    <p>Prebuzz 1 uses a "knock on the door" hook. Launch 1 uses a "newspaper at the door" format. Both are door-based and meant to be repeatable. Running both in the same launch cycle risks making the campaign feel formulaic. Either merge them into one overarching door motif with intentional variation, or differentiate them more sharply so they feel distinct. Decide before the first shoot.</p>
+  </div>
+
+  <div class="decision">
+    <div class="decision-label">Decision needed — the brand film</div>
+    <p>The Concept Storytelling film (poetic, cinematic, brand film) is the most important piece in the entire IP — everything else is cut from it or references it. It currently has no brief of its own. Before any other content is shot, write a separate one-page brief for this film: what is the emotional arc, whose story does it follow, what is the first frame, what is the last feeling. This cannot be left to interpretation.</p>
+  </div>
+</div>
+
+<!-- SECTION 8 -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">08</div>
+    <div class="section-title-block">
+      <div class="section-eyebrow">Creators</div>
+      <div class="section-title">Influencer Philosophy</div>
+    </div>
+  </div>
+
+  <div class="filled">
+    <div class="filled-label">Pre-filled — core philosophy</div>
+    <p>The creator's story leads. Brand integration is natural and never transactional-feeling. A creator who genuinely wears and believes the product is worth more than one with 10x the followers who doesn't. We are building long-term associations, not one-time posts.</p>
+  </div>
+
+  <div class="filled">
+    <div class="filled-label">Pre-filled — non-negotiables for all creators</div>
+    <p><strong>Must always include:</strong> Minimum 3 hooks per reel. Text overlays within Meta safe zones. Tags to @saadaadesigns | @saadaa_women | @saadaa_men. Hashtags: #BharatKaBehtarWardrobe #RahoSaadaa #pehnosaadaa #saadaa.</p>
+    <p style="margin-top: 10px;"><strong>Must never do:</strong> Position the product as luxury or premium. Use aspirational language that contradicts the Behtar Wardrobe tone. Post content that could belong to any other brand.</p>
+  </div>
+
+  <div class="decision">
+    <div class="decision-label">Decision needed — tier strategy</div>
+    <ul>
+      <li>What are the creator tiers (nano / micro / macro) and the follower thresholds for each?</li>
+      <li>Which tier does what? (Nano for trust and relatability, macro for reach — but align explicitly.)</li>
+      <li>Is there a preferred content type per tier, or is it always creator discretion?</li>
+      <li>What does the briefing process look like — scripted, outlined, or fully open?</li>
+    </ul>
+  </div>
+
+  <div class="decision">
+    <div class="decision-label">Decision needed — hashtag primary</div>
+    <p>#BharatKaBehtarWardrobe is 22 characters and difficult to type naturally. Is there a shorter primary hashtag for verbal/casual use, with the full hashtag as the official tag? Consider whether a 2-word hashtag might get more organic adoption from creators and customers.</p>
+  </div>
+</div>
+
+<!-- SECTION 9 -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">09</div>
+    <div class="section-title-block">
+      <div class="section-eyebrow">Usage Guide</div>
+      <div class="section-title">How to Use This Document</div>
+    </div>
+  </div>
+
+  <div class="filled">
+    <div class="filled-label">Pre-filled</div>
+    <p><strong>If you are a writer or director:</strong> Read Sections 1–5 before touching a brief. Section 6 tells you who you're talking to. Section 7 tells you which format you're working in. If your instinct conflicts with anything in Section 5, the Constitution wins.</p>
+  </div>
+  <div class="filled">
+    <div class="filled-label">&nbsp;</div>
+    <p><strong>If you are a new team member:</strong> Read the entire document once. Then read Section 1 again. If you understand Section 1 and Section 5, you understand the campaign.</p>
+  </div>
+  <div class="filled">
+    <div class="filled-label">&nbsp;</div>
+    <p><strong>If you are a creator or influencer:</strong> You will receive a per-launch brief that refers back to this document. Read Sections 3 and 5 in full. The per-launch brief tells you what to make; this document tells you who you're making it for and how it must feel.</p>
+  </div>
+  <div class="filled">
+    <div class="filled-label">&nbsp;</div>
+    <p><strong>If you are an agency or freelancer:</strong> This is your primary creative reference. The per-launch playbook is the execution brief. Do not produce anything that contradicts this Constitution without written sign-off from the सादा / SAADAA team.</p>
+  </div>
+
+  <div class="decision">
+    <div class="decision-label">Decision needed — review cadence</div>
+    <p>This document should be reviewed once annually, or after every 5 launches — whichever comes first. Assign one person internally who owns this document and is responsible for keeping it current. Without an owner, it will drift.</p>
+  </div>
+
+  <div style="margin-top: 32px; padding: 20px 24px; border: 1px solid var(--rule); border-radius: 4px; background: white;">
+    <div style="font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; font-weight: 500;">Final Brand Statement</div>
+    <p style="font-family: 'Playfair Display', serif; font-size: 18px; line-height: 1.5; color: var(--ink);">Better fabrics. Timeless silhouettes.<br>A wardrobe that simply works for Indian men and women.</p>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<div class="doc-footer">
+  <span><strong>सादा / SAADAA</strong> · Bharat Ka BETTER | बेहतर Wardrobe · IP Constitution V1.0</span>
+  <span>Internal document · Not for external distribution without sign-off</span>
+</div>
+
+</body>
+</html>
